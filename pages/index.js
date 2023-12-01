@@ -7,6 +7,8 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const atmABI = atm_abi.abi;
@@ -74,7 +76,29 @@ export default function HomePage() {
       getBalance();
     }
   }
+  const handleDepositInputChange = (event) => {
+    setDepositAmount(event.target.value);
+  };
 
+  const handleWithdrawInputChange = (event) => {
+    setWithdrawAmount(event.target.value);
+  };
+
+  const depositWithUserInput = async () => {
+    if (atm && depositAmount > 0) {
+      let tx = await atm.deposit(depositAmount);
+      await tx.wait();
+      getBalance();
+    }
+  };
+
+  const withdrawWithUserInput = async () => {
+    if (atm && withdrawAmount > 0) {
+      let tx = await atm.withdraw(withdrawAmount);
+      await tx.wait();
+      getBalance();
+    }
+  };
   const initUser = () => {
     // Check to see if user has Metamask
     if (!ethWallet) {
@@ -91,11 +115,25 @@ export default function HomePage() {
     }
 
     return (
-      <div>
+      <div className="css2">
         <p>Your Account: {account}</p>
         <p>Your Balance: {balance}</p>
         <button onClick={deposit}>Deposit 1 ETH</button>
-        <button onClick={withdraw}>Withdraw 1 ETH</button>
+        <button onClick={withdraw}>Withdraw 1 ETH</button><br></br>
+        <br></br>
+        <label>Enter deposit value:</label>
+        <input type="number" onChange={handleDepositInputChange}></input>
+        <button onClick={depositWithUserInput}>Deposit ETH</button>
+        <br></br>
+        <label>Enter withdraw value:</label>
+        <input type="number" onChange={handleWithdrawInputChange}></input>
+        <button onClick={withdrawWithUserInput}>Withdraw ETH</button>
+        <style jsx>{`
+        .css2{
+          color:white;
+        }
+      `}
+      </style>
       </div>
     )
   }
@@ -104,11 +142,16 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <header><h1>Welcome to the Metacrafters ATM!</h1></header>
+      <header><h1 className="css1">Welcome to the Metacrafters ATM!</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
-          text-align: center
+          text-align: center;
+          background-color:black;
+          background-image: url("images\ethereum-1.jpeg");
+        }
+        .css1{
+          color:white;
         }
       `}
       </style>
